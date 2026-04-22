@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { NotificationBanner } from "@/components/NotificationBanner";
+import { BottomNav } from "@/components/BottomNav";
 
 export function AppLayout({ children }: { children: ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
+      <BottomNav />
     </div>
   );
 }
