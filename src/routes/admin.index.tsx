@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Github, RefreshCw, ShieldCheck, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Github, RefreshCw, ShieldCheck, CheckCircle2, XCircle, Loader2, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/auth/AuthProvider";
 import { useLang } from "@/i18n/LanguageProvider";
 import { saveGithubConfig, runGithubSync, getGithubStatus } from "@/server/github-sync.functions";
+import { updateAdminCredentials } from "@/server/admin-account.functions";
 import { format } from "date-fns";
 
 export const Route = createFileRoute("/admin/")({
@@ -88,7 +89,9 @@ function AdminPage() {
       <section className="mx-auto max-w-5xl px-4 py-12 md:px-6">
         <h1 className="text-4xl">{t("admin.title")}</h1>
 
-        <Card className="mt-8 p-8">
+        <AdminCredentialsCard currentEmail={user?.email ?? ""} />
+
+        <Card className="mt-6 p-8">
           <div className="flex items-center gap-2">
             <Github className="h-5 w-5 text-primary" />
             <h2 className="text-xl">{t("admin.github")}</h2>
