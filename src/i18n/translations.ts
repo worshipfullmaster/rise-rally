@@ -108,6 +108,44 @@ export const t: Dict = {
   "admin.github": { en: "GitHub Configuration", fr: "Configuration GitHub", mg: "Fanamboarana GitHub" },
   "admin.sync_now": { en: "Sync now", fr: "Synchroniser", mg: "Ampifanaraho izao" },
   "admin.sync_logs": { en: "Sync logs", fr: "Journaux de synchro", mg: "Tatitra fampifanarahana" },
+
+  // Home enrichments
+  "home.kicker": { en: "Movement · Madagascar", fr: "Mouvement · Madagascar", mg: "Hetsika · Madagasikara" },
+  "home.cta.discover": { en: "Discover", fr: "Découvrir", mg: "Hahalala bebe kokoa" },
+  "home.stats.cells": { en: "Local cells", fr: "Cellules locales", mg: "Vondrona an-toerana" },
+  "home.stats.cities": { en: "Cities active", fr: "Villes actives", mg: "Tanàna mavitrika" },
+  "home.stats.modules": { en: "Free trainings", fr: "Formations libres", mg: "Fiofanana maimaim-poana" },
+  "home.stats.languages": { en: "Languages", fr: "Langues", mg: "Fiteny" },
+
+  "home.pillars": { en: "Our pillars", fr: "Nos piliers", mg: "Ny andry"},
+  "pillar.peace.title": { en: "Strictly non-violent", fr: "Strictement non-violent", mg: "Tsy misy herisetra mihitsy" },
+  "pillar.peace.body": { en: "Civic action, dialogue, art and presence — never violence.", fr: "Action civique, dialogue, art, présence — jamais la violence.", mg: "Hetsika sivily, fifanakalozana, kanto, fisiana — tsy herisetra mihitsy." },
+  "pillar.security.title": { en: "Digital protection", fr: "Protection numérique", mg: "Fiarovana an-tserasera" },
+  "pillar.security.body": { en: "Encrypted comms, metadata stripping, panic exit, anti-doxxing.", fr: "Comms chiffrées, suppression de métadonnées, sortie d''urgence.", mg: "Serasera voaaro, fanafoanana metadata, fivoahana haingana." },
+  "pillar.education.title": { en: "Free education", fr: "Éducation libre", mg: "Fanabeazana maimaim-poana" },
+  "pillar.education.body": { en: "Trainings on rights, organizing, media literacy and care.", fr: "Formations droits, organisation, info, soin.", mg: "Fiofanana zo, fandaminana, vaovao, fikarakarana." },
+  "pillar.solidarity.title": { en: "Solidarity & care", fr: "Solidarité & soin", mg: "Firaisan-kina sy fikarakarana" },
+  "pillar.solidarity.body": { en: "Peer circles, legal observers, medical support, mutual aid.", fr: "Cercles de pairs, observateurs, secours, entraide.", mg: "Vondrona, mpanara-maso, vonjy aina, fifanampiana." },
+
+  "home.hotlines": { en: "Emergency hotlines", fr: "Lignes d''urgence", mg: "Laharana vonjy maika" },
+  "hotline.legal": { en: "Legal aid", fr: "Aide juridique", mg: "Fanampiana ara-dalàna" },
+  "hotline.medic": { en: "Street medics", fr: "Secouristes", mg: "Mpitsabo an-dalambe" },
+  "hotline.mental": { en: "Mental support", fr: "Soutien psy", mg: "Fanohanana ara-tsaina" },
+
+  "home.faq": { en: "Frequently asked", fr: "Questions fréquentes", mg: "Fanontaniana matetika" },
+  "faq.q1": { en: "Is the movement violent?", fr: "Le mouvement est-il violent ?", mg: "Mampiasa herisetra ve ny hetsika ?" },
+  "faq.a1": { en: "No. We are strictly non-violent. Civic action only.", fr: "Non. Nous sommes strictement non-violents. Action civique uniquement.", mg: "Tsia. Tsy mampiasa herisetra mihitsy izahay." },
+  "faq.q2": { en: "Is my data safe here?", fr: "Mes données sont-elles protégées ?", mg: "Voaaro ve ny angonako ?" },
+  "faq.a2": { en: "Photos are stripped of metadata. The Quick Exit clears your local data instantly.", fr: "Les photos sont nettoyées. La Sortie rapide efface tout localement.", mg: "Voaesotra ny metadata. Mamafa avy hatrany ny Hivoaka haingana." },
+  "faq.q3": { en: "How can I join a local cell?", fr: "Comment rejoindre une cellule ?", mg: "Ahoana no hidirana amin''ny vondrona ?" },
+  "faq.a3": { en: "Sign up, attend an event, then ask a coordinator on Telegram.", fr: "Créez un compte, venez à un événement, demandez à un coordinateur.", mg: "Misoratra, manatreha hetsika, manontania amin''ny mpandrindra." },
+  "faq.q4": { en: "Where does the funding go?", fr: "Où va l''argent ?", mg: "Aiza no andehanan''ny vola ?" },
+  "faq.a4": { en: "Trainings, legal aid, materials, medical kits and digital security.", fr: "Formations, aide juridique, matériel, kits médicaux, sécurité.", mg: "Fiofanana, mpisolovava, fitaovana, kit medika, fiarovana." },
+
+  "home.join": { en: "Ready to act?", fr: "Prêt·e à agir ?", mg: "Vonona hihetsika ?" },
+  "home.join_body": { en: "Join thousands of young Malagasy organizing peacefully and safely.", fr: "Rejoins des milliers de jeunes Malgaches qui s''organisent.", mg: "Mirosoa amin''ireo tanora maro miaraka am-pilaminana." },
+
+  "footer.tagline": { en: "Strictly non-violent civic engagement.", fr: "Engagement civique strictement non-violent.", mg: "Fandraisana anjara sivily, tsy misy herisetra." },
 };
 
 export function tr(key: string, lang: Lang): string {
