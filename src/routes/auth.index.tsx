@@ -24,8 +24,21 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [seedHint, setSeedHint] = useState<{ email: string; password: string } | null>(null);
 
   useEffect(() => { if (user) nav({ to: "/" }); }, [user, nav]);
+
+  // First-deploy bootstrap: idempotent — only seeds if no admin exists yet.
+  useEffect(() => {
+    fetch("/api/public/seed-admin")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j?.seeded && j?.password) {
+          setSeedHint({ email: j.email, password: j.password });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +83,21 @@ function AuthPage() {
           >
             {mode === "signin" ? t("auth.no_account") : t("auth.have_account")}
           </button>
+
+          {seedHint && (
+            <div className="mt-6 rounded-2xl border border-sun/40 bg-sun/10 p-4 text-xs">
+              <p className="font-bold uppercase tracking-wider text-sun">Default admin created</p>
+              <p className="mt-1 text-muted-foreground">
+                Email: <span className="font-mono text-foreground">{seedHint.email}</span>
+              </p>
+              <p className="text-muted-foreground">
+                Password: <span className="font-mono text-foreground">{seedHint.password}</span>
+              </p>
+              <p className="mt-2 text-muted-foreground">
+                Sign in and change these credentials immediately from the Admin page.
+              </p>
+            </div>
+          )}
         </Card>
       </section>
     </AppLayout>

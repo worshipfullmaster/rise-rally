@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Github, RefreshCw, ShieldCheck, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import { Github, RefreshCw, ShieldCheck, CheckCircle2, XCircle, Loader2, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/auth/AuthProvider";
 import { useLang } from "@/i18n/LanguageProvider";
 import { saveGithubConfig, runGithubSync, getGithubStatus } from "@/server/github-sync.functions";
+import { updateAdminCredentials } from "@/server/admin-account.functions";
 import { format } from "date-fns";
 
 export const Route = createFileRoute("/admin/")({
@@ -88,7 +89,9 @@ function AdminPage() {
       <section className="mx-auto max-w-5xl px-4 py-12 md:px-6">
         <h1 className="text-4xl">{t("admin.title")}</h1>
 
-        <Card className="mt-8 p-8">
+        <AdminCredentialsCard currentEmail={user?.email ?? ""} />
+
+        <Card className="mt-6 p-8">
           <div className="flex items-center gap-2">
             <Github className="h-5 w-5 text-primary" />
             <h2 className="text-xl">{t("admin.github")}</h2>
@@ -145,5 +148,68 @@ function AdminPage() {
         </Card>
       </section>
     </AppLayout>
+  );
+}
+
+function AdminCredentialsCard({ currentEmail }: { currentEmail: string }) {
+  const [newEmail, setNewEmail] = useState(currentEmail);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const submit = async () => {
+    const emailChanged = newEmail && newEmail !== currentEmail;
+    const wantsPwd = newPassword.length > 0;
+    if (!emailChanged && !wantsPwd) { toast.error("Nothing to update"); return; }
+    if (wantsPwd && newPassword !== confirm) { toast.error("Passwords do not match"); return; }
+    if (wantsPwd && newPassword.length < 10) { toast.error("Password must be at least 10 characters"); return; }
+    setBusy(true);
+    try {
+      await updateAdminCredentials({
+        data: {
+          ...(emailChanged ? { newEmail } : {}),
+          ...(wantsPwd ? { newPassword } : {}),
+        },
+      });
+      toast.success("Admin credentials updated. Sign in again with the new credentials.");
+      setNewPassword(""); setConfirm("");
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Card className="mt-8 p-8">
+      <div className="flex items-center gap-2">
+        <KeyRound className="h-5 w-5 text-primary" />
+        <h2 className="text-xl">Admin credentials</h2>
+      </div>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Change the email and password used to sign in as administrator.
+      </p>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <Label>Email</Label>
+          <Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
+        </div>
+        <div>
+          <Label>New password</Label>
+          <Input type="password" value={newPassword} minLength={10}
+            onChange={(e) => setNewPassword(e.target.value)} placeholder="Leave empty to keep current" />
+        </div>
+        <div>
+          <Label>Confirm new password</Label>
+          <Input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+        </div>
+      </div>
+      <div className="mt-6">
+        <Button onClick={submit} disabled={busy}>
+          {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          Save credentials
+        </Button>
+      </div>
+    </Card>
   );
 }
