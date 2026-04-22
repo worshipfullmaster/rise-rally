@@ -10,33 +10,167 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as NewsIndexRouteImport } from './routes/news.index'
+import { Route as MediaIndexRouteImport } from './routes/media.index'
+import { Route as EventsIndexRouteImport } from './routes/events.index'
+import { Route as DonateIndexRouteImport } from './routes/donate.index'
+import { Route as AuthIndexRouteImport } from './routes/auth.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AcademyIndexRouteImport } from './routes/academy.index'
+import { Route as NewsSlugRouteImport } from './routes/news.$slug'
+import { Route as EventsSlugRouteImport } from './routes/events.$slug'
+import { Route as AcademySlugRouteImport } from './routes/academy.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewsIndexRoute = NewsIndexRouteImport.update({
+  id: '/news/',
+  path: '/news/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MediaIndexRoute = MediaIndexRouteImport.update({
+  id: '/media/',
+  path: '/media/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsIndexRoute = EventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DonateIndexRoute = DonateIndexRouteImport.update({
+  id: '/donate/',
+  path: '/donate/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthIndexRoute = AuthIndexRouteImport.update({
+  id: '/auth/',
+  path: '/auth/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcademyIndexRoute = AcademyIndexRouteImport.update({
+  id: '/academy/',
+  path: '/academy/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/news/$slug',
+  path: '/news/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsSlugRoute = EventsSlugRouteImport.update({
+  id: '/events/$slug',
+  path: '/events/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcademySlugRoute = AcademySlugRouteImport.update({
+  id: '/academy/$slug',
+  path: '/academy/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/academy/$slug': typeof AcademySlugRoute
+  '/events/$slug': typeof EventsSlugRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/academy/': typeof AcademyIndexRoute
+  '/admin/': typeof AdminIndexRoute
+  '/auth/': typeof AuthIndexRoute
+  '/donate/': typeof DonateIndexRoute
+  '/events/': typeof EventsIndexRoute
+  '/media/': typeof MediaIndexRoute
+  '/news/': typeof NewsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/academy/$slug': typeof AcademySlugRoute
+  '/events/$slug': typeof EventsSlugRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/academy': typeof AcademyIndexRoute
+  '/admin': typeof AdminIndexRoute
+  '/auth': typeof AuthIndexRoute
+  '/donate': typeof DonateIndexRoute
+  '/events': typeof EventsIndexRoute
+  '/media': typeof MediaIndexRoute
+  '/news': typeof NewsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/academy/$slug': typeof AcademySlugRoute
+  '/events/$slug': typeof EventsSlugRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/academy/': typeof AcademyIndexRoute
+  '/admin/': typeof AdminIndexRoute
+  '/auth/': typeof AuthIndexRoute
+  '/donate/': typeof DonateIndexRoute
+  '/events/': typeof EventsIndexRoute
+  '/media/': typeof MediaIndexRoute
+  '/news/': typeof NewsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/academy/$slug'
+    | '/events/$slug'
+    | '/news/$slug'
+    | '/academy/'
+    | '/admin/'
+    | '/auth/'
+    | '/donate/'
+    | '/events/'
+    | '/media/'
+    | '/news/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/academy/$slug'
+    | '/events/$slug'
+    | '/news/$slug'
+    | '/academy'
+    | '/admin'
+    | '/auth'
+    | '/donate'
+    | '/events'
+    | '/media'
+    | '/news'
+  id:
+    | '__root__'
+    | '/'
+    | '/academy/$slug'
+    | '/events/$slug'
+    | '/news/$slug'
+    | '/academy/'
+    | '/admin/'
+    | '/auth/'
+    | '/donate/'
+    | '/events/'
+    | '/media/'
+    | '/news/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcademySlugRoute: typeof AcademySlugRoute
+  EventsSlugRoute: typeof EventsSlugRoute
+  NewsSlugRoute: typeof NewsSlugRoute
+  AcademyIndexRoute: typeof AcademyIndexRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AuthIndexRoute: typeof AuthIndexRoute
+  DonateIndexRoute: typeof DonateIndexRoute
+  EventsIndexRoute: typeof EventsIndexRoute
+  MediaIndexRoute: typeof MediaIndexRoute
+  NewsIndexRoute: typeof NewsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +182,91 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/news/': {
+      id: '/news/'
+      path: '/news'
+      fullPath: '/news/'
+      preLoaderRoute: typeof NewsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/media/': {
+      id: '/media/'
+      path: '/media'
+      fullPath: '/media/'
+      preLoaderRoute: typeof MediaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events/': {
+      id: '/events/'
+      path: '/events'
+      fullPath: '/events/'
+      preLoaderRoute: typeof EventsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/donate/': {
+      id: '/donate/'
+      path: '/donate'
+      fullPath: '/donate/'
+      preLoaderRoute: typeof DonateIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/': {
+      id: '/auth/'
+      path: '/auth'
+      fullPath: '/auth/'
+      preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/academy/': {
+      id: '/academy/'
+      path: '/academy'
+      fullPath: '/academy/'
+      preLoaderRoute: typeof AcademyIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/news/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events/$slug': {
+      id: '/events/$slug'
+      path: '/events/$slug'
+      fullPath: '/events/$slug'
+      preLoaderRoute: typeof EventsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/academy/$slug': {
+      id: '/academy/$slug'
+      path: '/academy/$slug'
+      fullPath: '/academy/$slug'
+      preLoaderRoute: typeof AcademySlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcademySlugRoute: AcademySlugRoute,
+  EventsSlugRoute: EventsSlugRoute,
+  NewsSlugRoute: NewsSlugRoute,
+  AcademyIndexRoute: AcademyIndexRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AuthIndexRoute: AuthIndexRoute,
+  DonateIndexRoute: DonateIndexRoute,
+  EventsIndexRoute: EventsIndexRoute,
+  MediaIndexRoute: MediaIndexRoute,
+  NewsIndexRoute: NewsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
