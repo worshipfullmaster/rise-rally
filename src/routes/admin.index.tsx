@@ -60,7 +60,13 @@ function AdminPage() {
   const save = async () => {
     setBusy(true);
     try {
-      await saveGithubConfig({ data: { repo_url: repoUrl, branch, pat, folders: folders.split(",").map((f) => f.trim()).filter(Boolean), enabled } });
+      await saveGithubConfig({ 
+        repo_url: repoUrl, 
+        branch, 
+        pat, 
+        folders: folders.split(",").map((f) => f.trim()).filter(Boolean), 
+        enabled 
+      });
       toast.success("GitHub config saved");
       setPat("");
       refresh();
@@ -136,7 +142,7 @@ function AdminPage() {
         <Card className="mt-6 p-8">
           <h2 className="text-xl">{t("admin.sync_logs")}</h2>
           <div className="mt-4 divide-y divide-border">
-            {logs.map((l) => (
+            {(logs || []).map((l) => (
               <div key={l.id} className="flex items-center gap-3 py-3 text-sm">
                 {l.status === "success" ? <CheckCircle2 className="h-4 w-4 text-success" />
                   : l.status === "partial" ? <CheckCircle2 className="h-4 w-4 text-warning" />
@@ -148,7 +154,7 @@ function AdminPage() {
                 <span className="ml-auto text-xs text-muted-foreground">+{l.items_updated} / ✗{l.items_failed}</span>
               </div>
             ))}
-            {logs.length === 0 && <p className="py-4 text-sm text-muted-foreground">No sync runs yet.</p>}
+            {(logs || []).length === 0 && <p className="py-4 text-sm text-muted-foreground">No sync runs yet.</p>}
           </div>
         </Card>
       </section>
@@ -171,10 +177,8 @@ function AdminCredentialsCard({ currentEmail }: { currentEmail: string }) {
     setBusy(true);
     try {
       await updateAdminCredentials({
-        data: {
-          ...(emailChanged ? { newEmail } : {}),
-          ...(wantsPwd ? { newPassword } : {}),
-        },
+        ...(emailChanged ? { newEmail } : {}),
+        ...(wantsPwd ? { newPassword } : {}),
       });
       toast.success("Admin credentials updated. Sign in again with the new credentials.");
       setNewPassword(""); setConfirm("");

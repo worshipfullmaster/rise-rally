@@ -1,7 +1,7 @@
 import { Link, useLocation } from "@tanstack/react-router";
 import { ShieldAlert, Globe, EyeOff, Eye, MoreHorizontal } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
-import { LANGS, type Lang } from "@/i18n/translations";
+import { type Lang } from "@/i18n/translations";
 import { useAuth } from "@/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,12 @@ import {
 import { PANIC_REDIRECT_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
+
+const LANGS = [
+  { code: "mg", label: "Malagasy", native: "Malagasy" },
+  { code: "fr", label: "French", native: "Français" },
+  { code: "en", label: "English", native: "English" },
+] as const;
 
 const navItems = [
   { to: "/", key: "nav.home" },
