@@ -42,20 +42,31 @@ function AdminPage() {
     try {
       const res = await getGithubStatus();
       setCfg(res.cfg as Cfg);
-      setLogs(res.logs as SyncLog[]);
+      setLogs(Array.isArray(res.logs) ? res.logs : []);
       if (res.cfg) {
         setRepoUrl(res.cfg.repo_url); setBranch(res.cfg.branch);
         setFolders((res.cfg.folders as string[]).join(","));
         setEnabled(res.cfg.enabled);
       }
-    } catch (e) { toast.error((e as Error).message); }
+    } catch (e) { 
+      console.error('Error loading GitHub config:', e);
+      toast.error((e as Error).message); 
+    }
   };
-  useEffect(() => { if (isAdmin) refresh(); }, [isAdmin]);
+  useEffect(() => { 
+    if (isAdmin && !loading) refresh(); 
+  }, [isAdmin, loading]);
 
   const save = async () => {
     setBusy(true);
     try {
-      await saveGithubConfig({ data: { repo_url: repoUrl, branch, pat, folders: folders.split(",").map((f) => f.trim()).filter(Boolean), enabled } });
+      await saveGithubConfig({ 
+        repo_url: repoUrl, 
+        branch, 
+        pat, 
+        folders: folders.split(",").map((f) => f.trim()).filter(Boolean), 
+        enabled 
+      });
       toast.success("GitHub config saved");
       setPat("");
       refresh();
@@ -120,10 +131,13 @@ function AdminPage() {
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button onClick={save} disabled={busy || !repoUrl || (!pat && !cfg)}>Save configuration</Button>
-            <Button onClick={sync} disabled={syncing || !cfg} variant="outline">
+            <Button onClick={sync} disabled={syncing || !cfg || !cfg.enabled} variant="outline">
               {syncing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
               {t("admin.sync_now")}
             </Button>
+            {cfg && !cfg.enabled && (
+              <span className="self-center text-xs text-destructive">GitHub sync is disabled in config.</span>
+            )}
             {cfg?.last_synced_at && <span className="self-center text-xs text-muted-foreground">Last sync: {format(new Date(cfg.last_synced_at), "PPp")}</span>}
           </div>
         </Card>
@@ -131,7 +145,7 @@ function AdminPage() {
         <Card className="mt-6 p-8">
           <h2 className="text-xl">{t("admin.sync_logs")}</h2>
           <div className="mt-4 divide-y divide-border">
-            {logs.map((l) => (
+            {(logs || []).map((l) => (
               <div key={l.id} className="flex items-center gap-3 py-3 text-sm">
                 {l.status === "success" ? <CheckCircle2 className="h-4 w-4 text-success" />
                   : l.status === "partial" ? <CheckCircle2 className="h-4 w-4 text-warning" />
@@ -143,7 +157,7 @@ function AdminPage() {
                 <span className="ml-auto text-xs text-muted-foreground">+{l.items_updated} / ✗{l.items_failed}</span>
               </div>
             ))}
-            {logs.length === 0 && <p className="py-4 text-sm text-muted-foreground">No sync runs yet.</p>}
+            {(logs || []).length === 0 && <p className="py-4 text-sm text-muted-foreground">No sync runs yet.</p>}
           </div>
         </Card>
       </section>
@@ -166,10 +180,8 @@ function AdminCredentialsCard({ currentEmail }: { currentEmail: string }) {
     setBusy(true);
     try {
       await updateAdminCredentials({
-        data: {
-          ...(emailChanged ? { newEmail } : {}),
-          ...(wantsPwd ? { newPassword } : {}),
-        },
+        ...(emailChanged ? { newEmail } : {}),
+        ...(wantsPwd ? { newPassword } : {}),
       });
       toast.success("Admin credentials updated. Sign in again with the new credentials.");
       setNewPassword(""); setConfirm("");

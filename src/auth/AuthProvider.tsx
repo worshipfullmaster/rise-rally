@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { setupServerFnAuth } from "@/integrations/server-fn-auth";
 
 export type AppRole = "admin" | "moderator" | "member";
 
@@ -25,24 +26,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const loadRoles = async (uid: string) => {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
-    setRoles(((data ?? []) as { role: AppRole }[]).map((r) => r.role));
+    try {
+      const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+      setRoles(((data ?? []) as { role: AppRole }[]).map((r) => r.role));
+    } catch (e) {
+      console.error("Error loading roles:", e);
+    }
   };
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
+      setupServerFnAuth(sess?.access_token);
       if (sess?.user) {
-        setTimeout(() => loadRoles(sess.user.id), 0);
+        loadRoles(sess.user.id);
       } else {
         setRoles([]);
       }
     });
-    supabase.auth.getSession().then(({ data: { session: sess } }) => {
+    supabase.auth.getSession().then(async ({ data: { session: sess } }) => {
       setSession(sess);
       setUser(sess?.user ?? null);
-      if (sess?.user) loadRoles(sess.user.id);
+      setupServerFnAuth(sess?.access_token);
+      if (sess?.user) {
+        await loadRoles(sess.user.id);
+      } else {
+        setRoles([]);
+      }
       setLoading(false);
     });
     return () => sub.subscription.unsubscribe();
