@@ -91,6 +91,7 @@ export const runGithubSync = createServerFn({ method: "POST" })
     const { data: cfg, error: cfgErr } = await admin.from("github_config").select("*").maybeSingle();
     if (cfgErr) throw new Error(cfgErr.message);
     if (!cfg) throw new Error("Configure GitHub first");
+    if (!cfg.enabled) throw new Error("GitHub sync is disabled in configuration");
 
     const { data: logRow } = await admin.from("sync_logs").insert({ status: "running", message: "Sync started" }).select("id").single();
     const logId = logRow?.id;
