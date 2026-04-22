@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "build": "vite build && node -e \"import('fs').then(m=>m.copyFileSync('dist/server/index.js','dist/server/server.js'))\"",
+    "build:dev": "vite build --mode development && node -e \"import('fs').then(m=>m.copyFileSync('dist/server/index.js','dist/server/server.js'))\"",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."

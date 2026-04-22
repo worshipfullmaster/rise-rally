@@ -42,15 +42,20 @@ function AdminPage() {
     try {
       const res = await getGithubStatus();
       setCfg(res.cfg as Cfg);
-      setLogs(res.logs as SyncLog[]);
+      setLogs(Array.isArray(res.logs) ? res.logs : []);
       if (res.cfg) {
         setRepoUrl(res.cfg.repo_url); setBranch(res.cfg.branch);
         setFolders((res.cfg.folders as string[]).join(","));
         setEnabled(res.cfg.enabled);
       }
-    } catch (e) { toast.error((e as Error).message); }
+    } catch (e) { 
+      console.error('Error loading GitHub config:', e);
+      toast.error((e as Error).message); 
+    }
   };
-  useEffect(() => { if (isAdmin) refresh(); }, [isAdmin]);
+  useEffect(() => { 
+    if (isAdmin && !loading) refresh(); 
+  }, [isAdmin, loading]);
 
   const save = async () => {
     setBusy(true);

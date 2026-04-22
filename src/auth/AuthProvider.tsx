@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { setupServerFnAuth } from "@/integrations/server-fn-auth";
 
 export type AppRole = "admin" | "moderator" | "member";
 
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
+      setupServerFnAuth(sess?.access_token);
       if (sess?.user) {
         setTimeout(() => loadRoles(sess.user.id), 0);
       } else {
@@ -42,6 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
       setSession(sess);
       setUser(sess?.user ?? null);
+      setupServerFnAuth(sess?.access_token);
       if (sess?.user) loadRoles(sess.user.id);
       setLoading(false);
     });

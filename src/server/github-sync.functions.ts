@@ -171,9 +171,12 @@ export const getGithubStatus = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     await assertAdmin(context.supabase as unknown as ReturnType<typeof createClient<Database>>, context.userId);
     const admin = adminClient();
-    const [{ data: cfg }, { data: logs }] = await Promise.all([
+    const [cfgResult, logsResult] = await Promise.all([
       admin.from("github_config").select("repo_url,branch,folders,enabled,last_synced_at").maybeSingle(),
       admin.from("sync_logs").select("*").order("started_at", { ascending: false }).limit(20),
     ]);
-    return { cfg, logs: logs ?? [] };
+    return { 
+      cfg: cfgResult?.data ?? null, 
+      logs: Array.isArray(logsResult?.data) ? logsResult.data : [] 
+    };
   });
