@@ -176,7 +176,7 @@ function Home() {
           </Link>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          {(news || []).map((n, idx) => (
+          {news.map((n, idx) => (
             <Link key={n.id} to="/news/$slug" params={{ slug: n.slug }} className="tap-scale">
               <Card className={`relative h-full overflow-hidden rounded-3xl p-5 transition hover:border-primary/50 ${idx === 0 ? "border-sun/40 bg-gradient-to-br from-sun/10 to-transparent" : ""}`}>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
