@@ -1,8 +1,3 @@
-/// <reference types="@tanstack/react-start/server" />
-import handler from "@tanstack/react-start/server-entry";
-
-export default {
-  fetch(request: Request) {
-    return handler.fetch(request);
-  },
-};
+// Server entry point for TanStack Start
+// This file is required for the build system to generate dist/server/server.js
+export default {}
