@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Github, RefreshCw, ShieldCheck, CheckCircle2, XCircle, Loader2, KeyRound } from "lucide-react";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/AppLayout";
@@ -35,8 +35,26 @@ function AdminPage() {
   const [syncing, setSyncing] = useState(false);
   const [cfg, setCfg] = useState<Cfg>(null);
   const [logs, setLogs] = useState<SyncLog[]>([]);
+  const [authTimeoutReached, setAuthTimeoutReached] = useState(false);
 
-  useEffect(() => { if (!loading && !user) nav({ to: "/auth" }); }, [user, loading, nav]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setAuthTimeoutReached(true), 1800);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      nav({ to: "/auth" });
+    }
+  }, [user, loading, nav]);
+
+  useEffect(() => {
+    if (authTimeoutReached && !user && !isAdmin) {
+      nav({ to: "/auth" });
+    }
+  }, [authTimeoutReached, user, isAdmin, nav]);
+
+  const canRenderAdmin = useMemo(() => !loading && !!user && isAdmin, [loading, user, isAdmin]);
 
   const refresh = async () => {
     try {
@@ -44,18 +62,22 @@ function AdminPage() {
       setCfg(res.cfg as Cfg);
       setLogs(Array.isArray(res.logs) ? res.logs : []);
       if (res.cfg) {
-        setRepoUrl(res.cfg.repo_url); setBranch(res.cfg.branch);
+        setRepoUrl(res.cfg.repo_url);
+        setBranch(res.cfg.branch);
         setFolders((res.cfg.folders as string[]).join(","));
         setEnabled(res.cfg.enabled);
       }
-    } catch (e) { 
-      console.error('Error loading GitHub config:', e);
-      toast.error((e as Error).message); 
+    } catch (e) {
+      console.error("Error loading GitHub config:", e);
+      toast.error((e as Error).message);
     }
   };
-  useEffect(() => { 
-    if (isAdmin && !loading) refresh(); 
-  }, [isAdmin, loading]);
+
+  useEffect(() => {
+    if (canRenderAdmin) {
+      void refresh();
+    }
+  }, [canRenderAdmin]);
 
   const save = async () => {
     setBusy(true);
@@ -71,9 +93,12 @@ function AdminPage() {
       });
       toast.success("GitHub config saved");
       setPat("");
-      refresh();
-    } catch (e) { toast.error((e as Error).message); }
-    finally { setBusy(false); }
+      void refresh();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const sync = async () => {
@@ -81,21 +106,32 @@ function AdminPage() {
     try {
       const r = await runGithubSync();
       toast.success(`Sync done: ${r.updated} updated, ${r.failed} failed`);
-      refresh();
-    } catch (e) { toast.error((e as Error).message); }
-    finally { setSyncing(false); }
+      void refresh();
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSyncing(false);
+    }
   };
 
-  if (loading) return <AppLayout><p className="p-12 text-muted-foreground">{t("common.loading")}</p></AppLayout>;
-  if (!isAdmin) return (
-    <AppLayout>
-      <div className="mx-auto max-w-md px-4 py-16 text-center">
-        <ShieldCheck className="mx-auto h-10 w-10 text-warning" />
-        <h1 className="mt-3 text-2xl">Admin only</h1>
-        <p className="mt-2 text-muted-foreground">Your account does not have admin privileges.</p>
-      </div>
-    </AppLayout>
-  );
+  if (!canRenderAdmin) {
+    return (
+      <AppLayout>
+        <div className="mx-auto max-w-md px-4 py-16 text-center">
+          <ShieldCheck className="mx-auto h-10 w-10 text-warning" />
+          <h1 className="mt-3 text-2xl">{authTimeoutReached ? t("auth.signin") : t("common.loading")}</h1>
+          <p className="mt-2 text-muted-foreground">
+            {authTimeoutReached
+              ? "Redirecting to sign in…"
+              : "Checking secure access…"}
+          </p>
+          <div className="mt-6">
+            <Button onClick={() => nav({ to: "/auth" })}>Go to sign in</Button>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
@@ -180,9 +216,18 @@ function AdminCredentialsCard({ currentEmail }: { currentEmail: string }) {
   const submit = async () => {
     const emailChanged = newEmail && newEmail !== currentEmail;
     const wantsPwd = newPassword.length > 0;
-    if (!emailChanged && !wantsPwd) { toast.error("Nothing to update"); return; }
-    if (wantsPwd && newPassword !== confirm) { toast.error("Passwords do not match"); return; }
-    if (wantsPwd && newPassword.length < 10) { toast.error("Password must be at least 10 characters"); return; }
+    if (!emailChanged && !wantsPwd) {
+      toast.error("Nothing to update");
+      return;
+    }
+    if (wantsPwd && newPassword !== confirm) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (wantsPwd && newPassword.length < 10) {
+      toast.error("Password must be at least 10 characters");
+      return;
+    }
     setBusy(true);
     try {
       await updateAdminCredentials({
@@ -192,7 +237,8 @@ function AdminCredentialsCard({ currentEmail }: { currentEmail: string }) {
         },
       });
       toast.success("Admin credentials updated. Sign in again with the new credentials.");
-      setNewPassword(""); setConfirm("");
+      setNewPassword("");
+      setConfirm("");
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
