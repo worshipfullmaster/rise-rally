@@ -30,7 +30,7 @@ function AdminPage() {
   const [branch, setBranch] = useState("main");
   const [pat, setPat] = useState("");
   const [folders, setFolders] = useState("content/news,content/resources,content/events,content/tutorials,content/pages");
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [cfg, setCfg] = useState<Cfg>(null);
@@ -108,7 +108,11 @@ function AdminPage() {
           <div className="flex items-center gap-2">
             <Github className="h-5 w-5 text-primary" />
             <h2 className="text-xl">{t("admin.github")}</h2>
+            <span className="ml-2 rounded-full bg-warning/15 px-2 py-0.5 text-xs text-warning">Optional / Paused</span>
           </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            GitHub sync is optional. Leave it disabled unless you actively manage content from a Git repo.
+          </p>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <Label>Repository URL</Label>
