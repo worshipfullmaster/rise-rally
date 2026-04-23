@@ -30,7 +30,7 @@ function AdminPage() {
   const [branch, setBranch] = useState("main");
   const [pat, setPat] = useState("");
   const [folders, setFolders] = useState("content/news,content/resources,content/events,content/tutorials,content/pages");
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [cfg, setCfg] = useState<Cfg>(null);
