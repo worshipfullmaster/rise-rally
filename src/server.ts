@@ -1,3 +1,6 @@
-// Server entry point for TanStack Start
-// This file is required for the build system to generate dist/server/server.js
-export default {}
+import { createStartHandler, defaultStreamHandler } from "@tanstack/react-start/server";
+import { getRouter } from "./router";
+
+export default createStartHandler({
+  createRouter: getRouter,
+})(defaultStreamHandler);
