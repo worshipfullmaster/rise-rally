@@ -60,12 +60,14 @@ function AdminPage() {
   const save = async () => {
     setBusy(true);
     try {
-      await saveGithubConfig({ 
-        repo_url: repoUrl, 
-        branch, 
-        pat, 
-        folders: folders.split(",").map((f) => f.trim()).filter(Boolean), 
-        enabled 
+      await saveGithubConfig({
+        data: {
+          repo_url: repoUrl,
+          branch,
+          pat,
+          folders: folders.split(",").map((f) => f.trim()).filter(Boolean),
+          enabled,
+        },
       });
       toast.success("GitHub config saved");
       setPat("");
@@ -180,8 +182,10 @@ function AdminCredentialsCard({ currentEmail }: { currentEmail: string }) {
     setBusy(true);
     try {
       await updateAdminCredentials({
-        ...(emailChanged ? { newEmail } : {}),
-        ...(wantsPwd ? { newPassword } : {}),
+        data: {
+          ...(emailChanged ? { newEmail } : {}),
+          ...(wantsPwd ? { newPassword } : {}),
+        },
       });
       toast.success("Admin credentials updated. Sign in again with the new credentials.");
       setNewPassword(""); setConfirm("");

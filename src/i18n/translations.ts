@@ -77,6 +77,49 @@ export const t: Dict = {
     mg: "Ny fanomezana dia mamatsy ny fiofanana, ny fitaovana, ny fanampiana ara-dalàna ary ny fiarovana an-tserasera.",
   },
   "donate.cta": { en: "Donate via Stripe", fr: "Faire un don via Stripe", mg: "Manolotra amin''ny Stripe" },
+  "donate.headline": {
+    en: "Fuel a peaceful, organized movement.",
+    fr: "Faites vivre un mouvement pacifique et organisé.",
+    mg: "Velomy ny hetsika milamina sy voalamina.",
+  },
+  "donate.secure": { en: "Secure payment", fr: "Paiement sécurisé", mg: "Fandoavam-bola voaaro" },
+  "donate.secure_desc": {
+    en: "Card, Apple Pay, Google Pay or Link. We never store card data.",
+    fr: "Carte, Apple Pay, Google Pay ou Link. Nous ne stockons aucune donnée bancaire.",
+    mg: "Karatra, Apple Pay, Google Pay na Link. Tsy mitahiry angonam-baolina izahay.",
+  },
+  "donate.scan": { en: "Scan to donate", fr: "Scannez pour donner", mg: "Tsofy hanolorana" },
+  "donate.impact_title": { en: "Your impact", fr: "Votre impact", mg: "Ny vokany" },
+  "donate.impact_5": {
+    en: "Prints 50 know-your-rights flyers for street outreach.",
+    fr: "Imprime 50 tracts « Connais tes droits » pour la rue.",
+    mg: "Manonta taratasy 50 « Fantaro ny zonao » ho an''ny lalambe.",
+  },
+  "donate.impact_20": {
+    en: "Equips a street medic with a basic first-aid refill kit.",
+    fr: "Équipe un secouriste de rue d''un kit de recharge.",
+    mg: "Manomana mpitsabo iray amin''ny kit vonjy aina fototra.",
+  },
+  "donate.impact_50": {
+    en: "Funds one full digital-safety workshop for 15 organizers.",
+    fr: "Finance un atelier complet de sécurité numérique pour 15 personnes.",
+    mg: "Mamatsy atrik''asa fiarovana an-tserasera ho an''ny olona 15.",
+  },
+  "donate.impact_100": {
+    en: "Covers legal observers for an entire weekend of mobilization.",
+    fr: "Couvre les observateurs juridiques pour un week-end entier.",
+    mg: "Manarona ny mpanara-maso ara-dalàna mandritra ny faran''ny herinandro.",
+  },
+  "donate.transparency_title": {
+    en: "Radical transparency",
+    fr: "Transparence radicale",
+    mg: "Mangarahara tanteraka",
+  },
+  "donate.transparency_body": {
+    en: "We publish a quarterly financial report. Every euro is traceable, public and reviewed by an independent committee of movement members.",
+    fr: "Nous publions un rapport financier trimestriel. Chaque euro est traçable, public et revu par un comité indépendant.",
+    mg: "Mamoaka tatitra ara-bola isaky ny telo volana izahay. Voafehy, ho an''ny besinimaro ary jeren''ny komity mahaleo tena ny vola tsirairay.",
+  },
 
   // Auth
   "auth.signin": { en: "Sign in", fr: "Connexion", mg: "Hiditra" },

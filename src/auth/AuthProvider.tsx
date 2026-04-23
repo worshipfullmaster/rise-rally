@@ -24,13 +24,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
+  const [rolesLoading, setRolesLoading] = useState(false);
 
   const loadRoles = async (uid: string) => {
+    setRolesLoading(true);
     try {
       const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
       setRoles(((data ?? []) as { role: AppRole }[]).map((r) => r.role));
     } catch (e) {
       console.error("Error loading roles:", e);
+      setRoles([]);
+    } finally {
+      setRolesLoading(false);
     }
   };
 
@@ -40,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(sess?.user ?? null);
       setupServerFnAuth(sess?.access_token);
       if (sess?.user) {
+        // fire and forget — rolesLoading state will gate UI
         loadRoles(sess.user.id);
       } else {
         setRoles([]);
@@ -75,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={{
-      user, session, roles, loading,
+      user, session, roles, loading: loading || rolesLoading,
       isAdmin: roles.includes("admin"),
       isModerator: roles.includes("moderator") || roles.includes("admin"),
       signIn, signUp, signOut,
