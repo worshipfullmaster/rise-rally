@@ -40,18 +40,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
-      setSession(sess);
-      setUser(sess?.user ?? null);
-      setupServerFnAuth(sess?.access_token);
-      if (sess?.user) {
-        // fire and forget — rolesLoading state will gate UI
-        loadRoles(sess.user.id);
-      } else {
-        setRoles([]);
-      }
-    });
-    supabase.auth.getSession().then(async ({ data: { session: sess } }) => {
+    let mounted = true;
+    const fallbackTimer = window.setTimeout(() => {
+      if (mounted) setLoading(false);
+    }, 2500);
+
+    const applySession = async (sess: Session | null) => {
+      if (!mounted) return;
       setSession(sess);
       setUser(sess?.user ?? null);
       setupServerFnAuth(sess?.access_token);
@@ -60,9 +55,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setRoles([]);
       }
-      setLoading(false);
+    };
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, sess) => {
+      void applySession(sess).finally(() => {
+        if (mounted) setLoading(false);
+      });
     });
-    return () => sub.subscription.unsubscribe();
+
+    void supabase.auth
+      .getSession()
+      .then(async ({ data: { session: sess } }) => {
+        await applySession(sess);
+      })
+      .catch((error) => {
+        console.error("Error restoring session:", error);
+        if (mounted) {
+          setSession(null);
+          setUser(null);
+          setRoles([]);
+          setupServerFnAuth(undefined);
+        }
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+      window.clearTimeout(fallbackTimer);
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
