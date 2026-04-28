@@ -1,26 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { ArrowLeft, Clock } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageProvider";
 import { pickLang } from "@/i18n/translations";
-import { supabase } from "@/integrations/supabase/client";
+import { findAcademy } from "@/content/loader";
 
 export const Route = createFileRoute("/academy/$slug")({
   component: AcademyDetail,
 });
 
-type Resource = { title: Record<string, string>; summary: Record<string, string>; body: Record<string, string>; category: string; read_minutes: number };
-
 function AcademyDetail() {
   const { slug } = Route.useParams();
   const { lang, t } = useLang();
-  const [r, setR] = useState<Resource | null>(null);
-  useEffect(() => {
-    supabase.from("resources").select("*").eq("slug", slug).maybeSingle()
-      .then(({ data }) => setR((data ?? null) as unknown as Resource | null));
-  }, [slug]);
+  const r = findAcademy(slug);
 
   return (
     <AppLayout>
@@ -36,10 +29,10 @@ function AcademyDetail() {
             <div className="mt-3 inline-flex items-center gap-1 text-xs text-muted-foreground">
               <Clock className="h-3 w-3" /> {r.read_minutes} {t("common.minutes")}
             </div>
-            <div className="mt-8 whitespace-pre-line text-foreground/90 leading-relaxed">{pickLang(r.body, lang)}</div>
+            <div className="mt-8 whitespace-pre-line text-foreground/90 leading-relaxed">{r.body}</div>
           </>
         ) : (
-          <p className="mt-12 text-muted-foreground">{t("common.loading")}</p>
+          <p className="mt-12 text-muted-foreground">{t("common.empty")}</p>
         )}
       </article>
     </AppLayout>

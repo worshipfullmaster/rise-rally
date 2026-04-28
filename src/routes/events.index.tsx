@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import { Calendar, MapPin } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Card } from "@/components/ui/card";
 import { useLang } from "@/i18n/LanguageProvider";
 import { pickLang } from "@/i18n/translations";
-import { supabase } from "@/integrations/supabase/client";
+import { EVENTS } from "@/content/loader";
 import { format } from "date-fns";
 
 export const Route = createFileRoute("/events/")({
@@ -13,22 +12,15 @@ export const Route = createFileRoute("/events/")({
   component: EventsList,
 });
 
-type EventRow = { id: string; slug: string; title: Record<string, string>; description: Record<string, string>; starts_at: string; location: string | null };
-
 function EventsList() {
   const { lang, t } = useLang();
-  const [items, setItems] = useState<EventRow[]>([]);
-  useEffect(() => {
-    supabase.from("events").select("*").eq("published", true).order("starts_at")
-      .then(({ data }) => setItems((data ?? []) as unknown as EventRow[]));
-  }, []);
   return (
     <AppLayout>
       <section className="mx-auto max-w-5xl px-4 py-12 md:px-6">
         <h1 className="text-4xl">{t("nav.events")}</h1>
         <div className="mt-8 grid gap-4 md:grid-cols-2">
-          {items.map((e) => (
-            <Link key={e.id} to="/events/$slug" params={{ slug: e.slug }}>
+          {EVENTS.map((e) => (
+            <Link key={e.slug} to="/events/$slug" params={{ slug: e.slug }}>
               <Card className="p-6 transition hover:border-primary/40 hover:bg-surface-2">
                 <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-primary">
                   <Calendar className="h-3 w-3" />
@@ -40,7 +32,7 @@ function EventsList() {
               </Card>
             </Link>
           ))}
-          {items.length === 0 && <p className="text-muted-foreground">{t("common.empty")}</p>}
+          {EVENTS.length === 0 && <p className="text-muted-foreground">{t("common.empty")}</p>}
         </div>
       </section>
     </AppLayout>
