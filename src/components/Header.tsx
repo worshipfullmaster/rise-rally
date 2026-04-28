@@ -1,13 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { ShieldAlert, Globe, EyeOff, Eye, MoreHorizontal } from "lucide-react";
+import { ShieldAlert, Globe, EyeOff, Eye, MoreHorizontal, Send } from "lucide-react";
 import { useLang } from "@/i18n/LanguageProvider";
 import { type Lang } from "@/i18n/translations";
-import { useAuth } from "@/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { PANIC_REDIRECT_URL } from "@/lib/constants";
+import { PANIC_REDIRECT_URL, TELEGRAM_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
 
@@ -22,7 +21,6 @@ const navItems = [
   { to: "/news", key: "nav.news" },
   { to: "/events", key: "nav.events" },
   { to: "/academy", key: "nav.academy" },
-  { to: "/media", key: "nav.media" },
   { to: "/donate", key: "nav.donate" },
 ] as const;
 
@@ -41,7 +39,6 @@ function panic() {
 
 export function Header() {
   const { t, lang, setLang, discreet, toggleDiscreet } = useLang();
-  const { user, isAdmin, signOut } = useAuth();
   const loc = useLocation();
 
   return (
@@ -116,22 +113,10 @@ export function Header() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link to="/media">{t("nav.media")}</Link>
+                <a href={TELEGRAM_URL} target="_blank" rel="noreferrer">
+                  <Send className="mr-2 h-4 w-4" /> {t("hero.cta.telegram")}
+                </a>
               </DropdownMenuItem>
-              {user ? (
-                <>
-                  {isAdmin && (
-                    <DropdownMenuItem asChild>
-                      <Link to="/admin">{t("nav.admin")}</Link>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem onClick={signOut}>{t("nav.signout")}</DropdownMenuItem>
-                </>
-              ) : (
-                <DropdownMenuItem asChild>
-                  <Link to="/auth">{t("nav.signin")}</Link>
-                </DropdownMenuItem>
-              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
