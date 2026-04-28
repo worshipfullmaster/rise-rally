@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Clock, Filter } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/i18n/LanguageProvider";
 import { pickLang } from "@/i18n/translations";
-import { supabase } from "@/integrations/supabase/client";
+import { ACADEMY } from "@/content/loader";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/academy/")({
@@ -14,21 +14,16 @@ export const Route = createFileRoute("/academy/")({
   component: AcademyList,
 });
 
-type Resource = { id: string; slug: string; title: Record<string, string>; summary: Record<string, string>; category: string; read_minutes: number };
-
 const CATS = ["all", "digital_safety", "organizing", "street_safety", "narrative", "know_your_rights", "general"] as const;
 
 function AcademyList() {
   const { lang, t } = useLang();
-  const [items, setItems] = useState<Resource[]>([]);
   const [cat, setCat] = useState<string>("all");
 
-  useEffect(() => {
-    supabase.from("resources").select("*").eq("published", true).order("created_at", { ascending: false })
-      .then(({ data }) => setItems((data ?? []) as unknown as Resource[]));
-  }, []);
-
-  const filtered = useMemo(() => cat === "all" ? items : items.filter((i) => i.category === cat), [items, cat]);
+  const filtered = useMemo(
+    () => (cat === "all" ? ACADEMY : ACADEMY.filter((i) => i.category === cat)),
+    [cat],
+  );
 
   return (
     <AppLayout>
@@ -56,7 +51,7 @@ function AcademyList() {
 
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((r) => (
-            <Link key={r.id} to="/academy/$slug" params={{ slug: r.slug }}>
+            <Link key={r.slug} to="/academy/$slug" params={{ slug: r.slug }}>
               <Card className="h-full p-6 transition hover:border-primary/40 hover:bg-surface-2">
                 <span className="inline-block rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary">
                   {t(`cat.${r.category}`)}
