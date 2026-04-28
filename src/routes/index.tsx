@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
 import {
   ArrowRight, Calendar, Send, ShieldCheck, Sparkles, Heart, BookOpen,
   Users, Globe2, Megaphone, Stethoscope, Scale, Brain, Flame, ChevronRight,
@@ -11,18 +10,14 @@ import { Card } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useLang } from "@/i18n/LanguageProvider";
 import { pickLang } from "@/i18n/translations";
-import { supabase } from "@/integrations/supabase/client";
 import { TELEGRAM_URL } from "@/lib/constants";
 import { format } from "date-fns";
 import { Logo } from "@/components/Logo";
+import { NEWS, ACADEMY, upcomingEvents } from "@/content/loader";
 
 export const Route = createFileRoute("/")({
   component: Home,
 });
-
-type News = { id: string; slug: string; title: Record<string, string>; excerpt: Record<string, string>; published_at: string };
-type EventRow = { id: string; slug: string; title: Record<string, string>; description: Record<string, string>; starts_at: string; location: string | null };
-type Resource = { id: string; slug: string; title: Record<string, string>; summary: Record<string, string>; category: string; read_minutes: number };
 
 const STORIES = [
   { key: "cat.digital_safety", to: "/academy", color: "from-primary to-hot", icon: ShieldCheck },
@@ -35,18 +30,9 @@ const STORIES = [
 
 function Home() {
   const { t, lang } = useLang();
-  const [news, setNews] = useState<News[]>([]);
-  const [events, setEvents] = useState<EventRow[]>([]);
-  const [resources, setResources] = useState<Resource[]>([]);
-
-  useEffect(() => {
-    supabase.from("news").select("id,slug,title,excerpt,published_at").eq("published", true).order("published_at", { ascending: false }).limit(4)
-      .then(({ data }) => setNews((data ?? []) as unknown as News[]));
-    supabase.from("events").select("id,slug,title,description,starts_at,location").eq("published", true).gte("starts_at", new Date().toISOString()).order("starts_at").limit(3)
-      .then(({ data }) => setEvents((data ?? []) as unknown as EventRow[]));
-    supabase.from("resources").select("id,slug,title,summary,category,read_minutes").eq("published", true).order("created_at", { ascending: false }).limit(4)
-      .then(({ data }) => setResources((data ?? []) as unknown as Resource[]));
-  }, []);
+  const news = NEWS.slice(0, 4);
+  const events = upcomingEvents().slice(0, 3);
+  const resources = ACADEMY.slice(0, 4);
 
   return (
     <AppLayout>
@@ -86,14 +72,10 @@ function Home() {
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22, duration: 0.55 }}
             className="mt-6 flex flex-wrap gap-2.5"
           >
-            <Link to="/auth">
-              <Button size="lg" className="tap-scale h-12 rounded-full px-6 font-bold shadow-glow">
-                {t("hero.cta.join")} <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-            </Link>
             <a href={TELEGRAM_URL} target="_blank" rel="noreferrer">
-              <Button size="lg" variant="outline" className="tap-scale h-12 rounded-full border-sun/40 bg-sun/5 px-5 font-bold text-sun hover:bg-sun/15 hover:text-sun">
-                <Send className="mr-1.5 h-4 w-4" /> Telegram
+              <Button size="lg" className="tap-scale h-12 rounded-full px-6 font-bold shadow-glow">
+                <Send className="mr-1.5 h-4 w-4" /> {t("hero.cta.telegram")}
+                <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             </a>
             <Link to="/donate">
@@ -120,7 +102,7 @@ function Home() {
         </div>
       </section>
 
-      {/* CATEGORY STORIES — horizontal scroll */}
+      {/* CATEGORY STORIES */}
       <section className="border-y border-border bg-surface/40">
         <div className="mx-auto max-w-7xl px-4 py-5 md:px-6">
           <div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 md:mx-0 md:px-0">
@@ -176,8 +158,8 @@ function Home() {
           </Link>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          {(news || []).map((n, idx) => (
-            <Link key={n.id} to="/news/$slug" params={{ slug: n.slug }} className="tap-scale">
+          {news.map((n, idx) => (
+            <Link key={n.slug} to="/news/$slug" params={{ slug: n.slug }} className="tap-scale">
               <Card className={`relative h-full overflow-hidden rounded-3xl p-5 transition hover:border-primary/50 ${idx === 0 ? "border-sun/40 bg-gradient-to-br from-sun/10 to-transparent" : ""}`}>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   {format(new Date(n.published_at), "PP")}
@@ -206,7 +188,7 @@ function Home() {
             {events.map((e) => {
               const d = new Date(e.starts_at);
               return (
-                <Link key={e.id} to="/events/$slug" params={{ slug: e.slug }} className="tap-scale">
+                <Link key={e.slug} to="/events/$slug" params={{ slug: e.slug }} className="tap-scale">
                   <Card className="flex h-full items-start gap-4 rounded-3xl p-5 transition hover:border-primary/40">
                     <div className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-primary to-hot text-primary-foreground shadow-glow">
                       <div className="text-center">
@@ -238,7 +220,7 @@ function Home() {
         <p className="mt-2 max-w-xl text-sm text-muted-foreground md:text-base">{t("academy.subtitle")}</p>
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {resources.map((r) => (
-            <Link key={r.id} to="/academy/$slug" params={{ slug: r.slug }} className="tap-scale">
+            <Link key={r.slug} to="/academy/$slug" params={{ slug: r.slug }} className="tap-scale">
               <Card className="h-full rounded-3xl border-border p-5 transition hover:border-primary/40 hover:bg-surface-2">
                 <span className="inline-block rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary">
                   {t(`cat.${r.category}`)}
@@ -301,11 +283,11 @@ function Home() {
             </h2>
             <p className="mt-3 max-w-xl text-muted-foreground">{t("home.join_body")}</p>
             <div className="mt-5 flex flex-wrap gap-2.5">
-              <Link to="/auth">
+              <a href={TELEGRAM_URL} target="_blank" rel="noreferrer">
                 <Button size="lg" className="tap-scale h-12 rounded-full px-6 font-bold shadow-glow">
-                  {t("hero.cta.join")} <ArrowRight className="ml-1 h-4 w-4" />
+                  <Send className="mr-1.5 h-4 w-4" /> {t("hero.cta.telegram")}
                 </Button>
-              </Link>
+              </a>
               <Link to="/events">
                 <Button size="lg" variant="outline" className="tap-scale h-12 rounded-full px-5 font-bold">
                   <Calendar className="mr-1.5 h-4 w-4" /> {t("hero.cta.events")}
